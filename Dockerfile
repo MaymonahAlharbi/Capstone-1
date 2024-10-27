@@ -1,13 +1,16 @@
 FROM python
 
+
+# Set working directory
 WORKDIR /app
 
-COPY requirements.txt ./
+COPY . /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN pip install -r requirements.txt
 
-COPY . .
+# Expose port 7000 for the Flask app
+EXPOSE 7070
 
-EXPOSE 7001
-
-CMD [ "python", "app.py" ]
+# Start the Flask app
+CMD ["python", "app.py"]
