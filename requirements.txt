@@ -1,0 +1,4 @@
+Flask
+redis
+mysql-connector-python
+unittest2

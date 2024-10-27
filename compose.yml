@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "7001:7001"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: mydatabase
+ 
+
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_DB: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+
