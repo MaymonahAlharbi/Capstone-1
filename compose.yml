@@ -13,8 +13,7 @@ services:
     depends_on:
       - db
       - redis
-    volumes:
-      - .:/app
+
 
   redis:
     image: redis:alpine
@@ -30,8 +29,4 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
 
-volumes:
-  db_data:
