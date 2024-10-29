@@ -1,47 +1,46 @@
-name: Deploy to Cloud Servers
+name: Build and Deploy
 
-on:
-  push:
-    branches:
-      - main
-
+on: [push]
 
 jobs:
-
   deploy:
     runs-on: self-hosted
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Deploy Dockerfile to App Server 1
+      - name: Set up SSH on Bastion
         env:
-              SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-              SERVER_HOST_1: ${{ secrets.SERVER_HOST_1 }}
-              SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-              SERVER_HOST_2: ${{ secrets.SERVER_HOST_2 }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          JUMP_HOST: ${{ secrets.BASTION_HOST }}
+          SERVER_HOST_1: ${{ secrets.SERVER_1_HOST }}
+          SERVER_HOST_2: ${{ secrets.SERVER_2_HOST }}
         run: |
-              ssh-keyscan $SERVER_HOST_1 >> ~/.ssh/known_hosts
-              ssh-keyscan $SERVER_HOST_2 >> ~/.ssh/known_hosts
-              echo "$SSH_PRIVATE_KEY" > ~/.ssh/github_actions
-              chmod 600 ~/.ssh/github_actions
-              ssh -i ~/.ssh/github_actions $SSH_USERNAME@$SERVER_HOST_1 "cd /Capstone-1 && git pull && docker compose up -d --build"
- 
- 
-#   deploy_2:
-#     runs-on: self-hosted
-#     steps:
-#       - name: Deploy Dockerfile to App Server 1
-#         env:
-#             SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-#             SERVER_HOST_1: ${{ secrets.SERVER_HOST_1 }}
-#             SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-#             SERVER_HOST_3: ${{ secrets.SERVER_HOST_3 }}
-#         runs: |
-#             ssh-keyscan $SERVER_HOST_1 >> ~/.ssh/known_hosts
-#             ssh-keyscan $SERVER_HOST_3 >> ~/.ssh/known_hosts
-#             echo "$SSH_PRIVATE_KEY" > ~/.ssh/github_actions
-#             ssh -i ~/.ssh/github_actions $SSH_USERNAME@$SERVER_HOST_1 "cd /Capstone-1 && git pull && docker compose up -d --build"
+          # Set up SSH key for bastion server
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/github_actions
+          chmod 600 ~/.ssh/github_actions
 
+          # Add both HTTP servers to known hosts
+          ssh-keyscan $SERVER_1_HOST >> ~/.ssh/known_hosts
+          ssh-keyscan $SERVER_2_HOST >> ~/.ssh/known_hosts
 
+          # Deploy to Server 1 via Bastion
+          ssh -i ~/.ssh/github_actions $SSH_USERNAME@$BASTION_HOST "
+            ssh $SSH_USERNAME@$SERVER_1_HOST '
+              cd /docker-compose-flask-app &&
+              git pull &&
+              docker compose up -d --build
+            '
+          "
 
+          # Deploy to Server 2 via Bastion
+          ssh -i ~/.ssh/github_actions $SSH_USERNAME@$BASTION_HOST "
+            ssh $SSH_USERNAME@$SERVER_2_HOST '
+              cd /docker-compose-flask-app &&
+              git pull &&
+              docker compose up -d --build
+            '
+          "
+
+      - name: Clean up SSH Key
+        run: rm -f ~/.ssh/github_actions
