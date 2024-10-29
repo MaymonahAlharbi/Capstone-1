@@ -1,0 +1,32 @@
+name: Deploy to Cloud Servers
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy Dockerfile
+        env:
+              SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+              SERVER_HOST_1: ${{ secrets.SERVER_HOST_1 }}
+              SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+              SERVER_HOST_2: ${{ secrets.SERVER_HOST_2 }}
+              SERVER_HOST_3: ${{ secrets.SERVER_HOST_3 }}
+        run: |
+              ssh-keyscan $SERVER_HOST_1 >> ~/.ssh/known_hosts
+              ssh-keyscan $SERVER_HOST_2 >> ~/.ssh/known_hosts
+              ssh-keyscan $SERVER_HOST_3 >> ~/.ssh/known_hosts
+              echo "$SSH_PRIVATE_KEY" > ~/.ssh/github_actions
+              chmod 600 ~/.ssh/github_actions
+              ssh -i ~/.ssh/github_actions $SSH_USERNAME@$SERVER_HOST_1 "cd /Capstone-1 && git pull && docker compose up -d --build"
+
