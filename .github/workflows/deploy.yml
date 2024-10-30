@@ -9,6 +9,7 @@ jobs:
       matrix:
         servers: ["10.0.2.125", "10.0.2.126"]
 
+        
     steps:
       - name: Add servers to known_hosts
         run: |
