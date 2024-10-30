@@ -7,14 +7,14 @@ jobs:
     runs-on: self-hosted
     strategy:
       matrix:
-        servers: ["10.0.2.125", "10.0.2.126"]
+        servers: ["10.0.2.130", "10.0.2.129"]
 
         
     steps:
       - name: Add servers to known_hosts
         run: |
-          ssh-keyscan -H 10.0.2.125 >> ~/.ssh/known_hosts
-          ssh-keyscan -H 10.0.2.126 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 10.0.2.129 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 10.0.2.120 >> ~/.ssh/known_hosts
 
       - name: Deploying Docker image to ${{ matrix.servers }}
         env:
