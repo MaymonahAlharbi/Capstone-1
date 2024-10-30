@@ -14,6 +14,8 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SERVER_1_HOST: ${{ secrets.SERVER_1_HOST }}
+          SERVER_2_HOST: ${{ secrets.SERVER_2_HOST }}
         run: |
           ssh-keyscan -H ${{ matrix.servers }} >> ~/.ssh/known_hosts
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
