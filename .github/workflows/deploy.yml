@@ -27,7 +27,5 @@ jobs:
             cd /Capstone-1 &&
             docker compose pull web &&
             docker compose up web -d &&
-            docker image rm \$(docker image ls --filter dangling=true -q)
           "
 
-          
