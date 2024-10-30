@@ -7,7 +7,7 @@ jobs:
     runs-on: self-hosted
     strategy:
       matrix:
-        servers: ["10.0.2.130", "10.0.2.129"]
+        servers: ["10.0.2.133", "10.0.2.134"]
 
     steps:
       - name: Add servers to known_hosts
