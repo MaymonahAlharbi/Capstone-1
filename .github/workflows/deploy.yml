@@ -1,10 +1,10 @@
-name: Build and Deploy
+name: Deploy To Http Servers
 
 on: [push]
 
 jobs:
   build:
-    runs-on: self-hosted  # Runner on the bastion/jump server
+    runs-on: self-hosted  
 
     steps:
       - name: Deploy to server 1
