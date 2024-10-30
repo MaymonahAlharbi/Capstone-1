@@ -22,12 +22,10 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
           chmod 600 ~/.ssh/ssh_key
+          
           ssh -T -i ~/.ssh/ssh_key $SSH_USERNAME@${{ matrix.servers }} "
             cd /Capstone-1 &&
             docker compose pull web &&
             docker compose up web -d &&
             docker image rm \$(docker image ls --filter dangling=true -q)
           "
-
-         
-          
