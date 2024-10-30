@@ -7,13 +7,13 @@ jobs:
     runs-on: self-hosted
     strategy:
       matrix:
-        servers: ["10.0.2.133", "10.0.2.134"]
+        servers: ["10.0.2.137", "10.0.2.138"]
 
     steps:
       - name: Add servers to known_hosts
         run: |
-          ssh-keyscan -H 10.0.2.133 >> ~/.ssh/known_hosts
-          ssh-keyscan -H 10.0.2.134 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 10.0.2.137 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 10.0.2.138 >> ~/.ssh/known_hosts
 
       - name: Deploy ${{ matrix.servers }}
         env:
@@ -29,7 +29,3 @@ jobs:
             docker compose up web -d &&
             docker image rm \$(docker image ls --filter dangling=true -q)
           "
-
-
-
-          
