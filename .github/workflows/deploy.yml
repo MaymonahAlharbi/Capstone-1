@@ -26,6 +26,6 @@ jobs:
           ssh -T -i ~/.ssh/ssh_key $SSH_USERNAME@${{ matrix.servers }} "
             cd /Capstone-1 &&
             docker compose pull web &&
-            docker compose up web -d &&
+            docker compose up web -d
           "
 
