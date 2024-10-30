@@ -3,33 +3,24 @@ name: Deploy To Http Servers
 on: [push]
 
 jobs:
-  build:
-    runs-on: self-hosted  
+  deploy:
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        servers: ["10.0.2.125", "10.0.2.126"]
 
     steps:
-      - name: Deploy to server 1
+      - name: Deploying Docker image to ${{ matrix.servers }}
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SERVER_1_HOST: "10.0.2.125"
         run: |
-          ssh-keyscan $SERVER_1_HOST >> ~/.ssh/known_hosts
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/github_actions
-          chmod 600 ~/.ssh/github_actions
-          ssh -i ~/.ssh/github_actions $SSH_USERNAME@$SERVER_1_HOST "cd /Capstone-1 && git pull && docker compose up -d --build"
-
-
-      - name: Deploy to server 2
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SERVER_2_HOST: "10.0.2.126"
-        run: |
-          ssh-keyscan $SERVER_2_HOST >> ~/.ssh/known_hosts
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/github_actions
-          chmod 600 ~/.ssh/github_actions
-          ssh -i ~/.ssh/github_actions $SSH_USERNAME@$SERVER_2_HOST "cd /Capstone-1 && git pull && docker compose up -d --build"
-
-
-
-
+          ssh-keyscan -H ${{ matrix.servers }} >> ~/.ssh/known_hosts
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
+          chmod 600 ~/.ssh/ssh_key
+          ssh -T -i ~/.ssh/ssh_key $SSH_USERNAME@${{ matrix.servers }} "
+            cd /Capstone-1 &&
+            docker compose pull web &&
+            docker compose up web -d &&
+            docker image rm \$(docker image ls --filter dangling=true -q)
+          "
