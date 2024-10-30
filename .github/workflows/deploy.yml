@@ -9,7 +9,6 @@ jobs:
     steps:
       - name: Deploy to server 1
         env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SERVER_1_HOST: "10.0.2.125"
@@ -22,7 +21,6 @@ jobs:
 
       - name: Deploy to server 2
         env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SERVER_2_HOST: "10.0.2.126"
@@ -35,4 +33,3 @@ jobs:
 
 
 
-          
