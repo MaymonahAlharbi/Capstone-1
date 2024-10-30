@@ -19,6 +19,7 @@ jobs:
           chmod 600 ~/.ssh/github_actions
           ssh -i ~/.ssh/github_actions $SSH_USERNAME@$SERVER_1_HOST "cd /Capstone-1 && git pull && docker compose up -d --build"
 
+          
       - name: Deploy to server 2
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
